@@ -4,8 +4,8 @@
 # Configuration
 
 option=${1}
-parkour_laas="/path/to/Parkour-LAAS/data" #TODO
-parkour_dataset="/path/to/Parkour_dataset/repo" #TODO
+parkour_laas=TODO # path to Parkour-LAAS folder
+parkour_dataset=TODO # path to Parkour-dataset folder
 
 # ------------------------------------------------------------
 # Execution
@@ -18,5 +18,5 @@ num_actions=${#actions[@]}
 for i in $( seq 0 $(( ${num_actions} - 1 )) )
 do
     action=${actions[i]}
-    echo source ${exec_path} ${option} ${parkour_laas} ${parkour_dataset} ${action}
+    source ${exec_path} ${option} ${parkour_laas} ${parkour_dataset} ${action}
 done

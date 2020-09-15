@@ -1,34 +1,36 @@
-# The Parkour dataset
+# Parkour dataset
 
-## Introduction
-
-The *Parkour dataset* contains 28 RGB videos capturing human subjects performing four typical parkour actions: *two-hand jump*, *move-up*, *pull-up* and *single-hand hop*.
+The *Parkour dataset* contains 28 RGB videos capturing human subjects performing four typical parkour techniques: *safety-vault*, *kong vault*, *pull-up* and *muscle-up*.
 These are highly dynamic motions with rich contact interactions with the environment.
-The dataset is provided with *ground truth 3D motion* and *contact forces*.
+
+The dataset is provided with the *ground truth 3D positions* of 16 pre-defined human joints, the *contact states* of the human subjects' hand and foot joints together with the *contact forces* exerted by the environment.
+
+Note that this dataset is created on top of the [LAAS Parkour database](https://gepettoweb.laas.fr/parkour/) which is originally created for biomechanics research. The database is a set of raw sequence data captured with a Vicon motion capture (MoCap) system and force sensors.
 
 ## Quick setup
 
 ### Dependencies
 
 * Python 2.7
-* Pinocchio
-* Gepetto-viewer Corba
+* Pinocchio (for computing rigid-body dynamics)
+* Gepetto-viewer Corba (for visualization)
 * FFmpeg (optional, for converting video to images)
-* BTK Python (optional, for reproducing the dataset from C3D)
+* BTK Python (optional, for reproducing this dataset)
 
 ### Installation
 
 ```terminal
-git clone https://github.com/zongmianli/Parkour-dataset ${parkour_dataset}
-cd ${parkour_dataset}
+git clone https://github.com/zongmianli/Parkour-dataset
 ```
-where `${parkour_dataset}` is the local path to a desired location for saving this dataset.
+Unless otherwise specified in this page, the local path to the cloned repo is denoted by the symbol `${parkour_dataset}`.
 
-### (Optional) Converting videos to image sequences
+### (Optional) Extracting frame images from video
+In terminal, run the following script to convert all videos in the dataset to image sequences. 
+The resulting images are saved in the folder `${parkour_dataset}/frames/`.
 ```terminal
+cd ${parkour_dataset}
 source lib/video_to_frames.sh ${parkour_dataset}
 ```
-The output images are saved under `${parkour_dataset}/frames/`.
 
 ## Computing motion and force estimation errors
 
@@ -39,15 +41,15 @@ For example:
 ```python
 from parkour_evaluator import ParkourEvaluator
 
-gt_dir = "/path/to/${parkour_dataset}/gt_motion_forces"
+gt_dir = "${parkour_dataset}/gt_motion_forces"
 sequence_name = "kv01_PKFC" # for example
 evaluator = ParkourEvaluator(gt_dir, sequence_name)
 ```
 
-The following code computes the mean per joint position error (MPJPE) of the estimated 3D pose (`joint_3d_positions_pred`) with respect to the ground truth after rigid alignment (by solving an orthogonal Procrustes problem):
+The following code computes the mean per joint position error (MPJPE) of a set of input joint 3D positions (`joint_3d_positions_pred`) with respect to the ground truth after rigid alignment (by solving an orthogonal Procrustes problem):
 ```python
 evaluator.Evaluate3DPoses(joint_3d_positions_pred)
-print("mpjpe: {0:.2f} mm".format(evaluator.mpjpe['procrustes']))
+print("MPJPE: {0:.2f} mm".format(evaluator.mpjpe['procrustes']))
 ```
 
 Similarly, force errors are computed like this:
@@ -61,20 +63,23 @@ print("mean torque errors: {0} N.m".format(
 
 ## (Optional) Reproducing Parkour dataset from C3D MoCap data
 
-The Parkour dataset is created on top of a set of original motion capture (MoCap) data captured with a Vicon motion capture system and force sensors.
-For clarity, we refer to the original MoCap data as *Parkour-LAAS* and make the distinction between Parkour-LAAS data and the Parkour dataset (this repo).
+For clarity, we refer to the original LAAS Parkour database as *Parkour-LAAS* and make the distinction between the *Parkour-LAAS* database and the present *Parkour dataset* used for evaluating 3D motion and force estimations.
 
-This section is aimed at reproducing the Parkour dataset from the original Parkour-LAAS data.
+This section is aimed at reproducing the *Parkour dataset* from the *Parkour-LAAS* data.
 
-### Extracting frame images from video
+### Download Parkour-LAAS data
 
-Download the Parkour-LAAS data ([link](tbd)) and decompress it to an arbitrary location denoted by `${parkour_laas}`.
-Then run the following script:
+First of all, [download](https://gepettoweb.laas.fr/parkour/) and decompress the motion files and the original videos in a local machine.
+Create a local folder named *Parkour-LAAS* with two subfolders `c3d` and `videos` to host the motion files and the videos, respectively.
+Similarly to `${parkour_dataset}`, we use the symbol `${parkour_laas}` to denote the path to the *Parkour-LAAS* folder.
+
+### Extracting frame images from Parkour-LAAS video
+Run the following script in terminal:
 ```terminal
 cd ${parkour_dataset}
 source lib/video_to_frames.sh ${parkour_laas}
 ```
-The frame images are saved under `${parkour_laas}/frames/`.
+The output images are saved under `${parkour_laas}/frames/`.
 
 ### Computing ground truth 3D motion and contact forces
 
