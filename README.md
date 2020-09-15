@@ -1,11 +1,13 @@
-# Parkour dataset
+# The LAAS Parkour dataset
 
-The *Parkour dataset* contains 28 RGB videos capturing human subjects performing four typical parkour techniques: *safety-vault*, *kong vault*, *pull-up* and *muscle-up*.
+The *LAAS Parkour dataset* contains 28 RGB videos capturing human subjects performing four typical parkour techniques: *safety-vault*, *kong vault*, *pull-up* and *muscle-up*.
 These are highly dynamic motions with rich contact interactions with the environment.
 
 The dataset is provided with the *ground truth 3D positions* of 16 pre-defined human joints, the *contact states* of the human subjects' hand and foot joints together with the *contact forces* exerted by the environment.
 
-Note that this dataset is created on top of the [LAAS Parkour database](https://gepettoweb.laas.fr/parkour/) which is originally created for biomechanics research. The database is a set of raw sequence data captured with a Vicon motion capture (MoCap) system and force sensors.
+This dataset is based on the [LAAS Parkour MoCap database](https://gepettoweb.laas.fr/parkour/) which is originally created for biomechanics research. 
+We have extracted the most relevant videos from LAAS Parkour MoCap database and provided additional script to process it. 
+The database is composed of a set of raw sequence data captured with a Vicon MoCap system and force sensors.
 
 ## Quick setup
 
@@ -61,25 +63,25 @@ print("mean torque errors: {0} N.m".format(
     evaluator.mean_torque_errors))
 ```
 
-## (Optional) Reproducing Parkour dataset from C3D MoCap data
+## (Optional) Reproducing the dataset from MoCap data
 
-For clarity, we refer to the original LAAS Parkour database as *Parkour-LAAS* and make the distinction between the *Parkour-LAAS* database and the present *Parkour dataset* used for evaluating 3D motion and force estimations.
+For clarity, we refer to the original LAAS Parkour MoCap database as *Parkour-MoCap* and make the distinction between the *Parkour-MoCap* database and the present *Parkour dataset* used for evaluating 3D motion and force estimations.
 
-This section is aimed at reproducing the *Parkour dataset* from the *Parkour-LAAS* data.
+This section is aimed at reproducing the *Parkour dataset* from the original *Parkour-MoCap* data.
 
-### Download Parkour-LAAS data
+### Download Parkour-MoCap data
 
 First of all, [download](https://gepettoweb.laas.fr/parkour/) and decompress the motion files and the original videos in a local machine.
-Create a local folder named *Parkour-LAAS* with two subfolders `c3d` and `videos` to host the motion files and the videos, respectively.
-Similarly to `${parkour_dataset}`, we use the symbol `${parkour_laas}` to denote the path to the *Parkour-LAAS* folder.
+Create a local folder named *Parkour-MoCap* with two subfolders `c3d` and `videos` to host the motion files and the videos, respectively.
+Similarly to `${parkour_dataset}`, we use the symbol `${parkour_mocap}` to denote the path to the *Parkour-MoCap* folder.
 
-### Extracting frame images from Parkour-LAAS video
+### Extracting frame images from Parkour-MoCap video
 Run the following script in terminal:
 ```terminal
 cd ${parkour_dataset}
-source lib/video_to_frames.sh ${parkour_laas}
+source lib/video_to_frames.sh ${parkour_mocap}
 ```
-The output images are saved under `${parkour_laas}/frames/`.
+The output images are saved under `${parkour_mocap}/frames/`.
 
 ### Computing ground truth 3D motion and contact forces
 
@@ -91,7 +93,7 @@ This command saves the frame images for Parkour dataset, computes 3D person join
 The output frame images are saved under `${parkour_dataset}/frames/`.
 The ground-truth 3D motion and contact forces are saved under `${parkour_dataset}/gt_motion_forces/`.
 
-Note that the length of image sequences in `${parkour_dataset}/frames` are shorter than the original ones saved in `${parkour_laas}/frames`.
+Note that the length of image sequences in `${parkour_dataset}/frames` are shorter than the original ones saved in `${parkour_mocap}/frames`.
 For example, the sequence *kv01_PKFC* which originally has 127 frames is shortened to 34 frames.
-This is becuase for each Parkour-LAAS video, only a short period of time (34 frames in the case of *kv01_PKFC*) is recorded with MoCap (e.g. marker positions, raw forces).
+This is becuase for each Parkour-MoCap video, only a short period of time (34 frames in the case of *kv01_PKFC*) is recorded with MoCap (e.g. marker positions, raw forces).
 For this reason, we remove the frames where Mocap data is missing (127-34=93 frames in the case of *kv01_PKFC*) and rename the remaining frames with new indices.

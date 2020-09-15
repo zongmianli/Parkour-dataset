@@ -18,15 +18,15 @@ from helpers.maths import rotation_matrix
 
 class ParkourDataExtractor(object):
 
-    def __init__(self, video_name, parkour_laas, parkour_dataset,
+    def __init__(self, video_name, parkour_mocap, parkour_dataset,
                  visualize=False):
 
         self.video_name = video_name
-        self.parkour_laas = parkour_laas
+        self.parkour_mocap = parkour_mocap
         self.parkour_dataset = parkour_dataset
 
         # Load c3d file with BTK
-        self.c3d_path = join(parkour_laas, "c3d", video_name+".c3d")
+        self.c3d_path = join(parkour_mocap, "c3d", video_name+".c3d")
         print("  Loading c3d data from {}".format(self.c3d_path))
         self.reader = btk.btkAcquisitionFileReader()
         self.reader.SetFilename(self.c3d_path)
@@ -40,7 +40,7 @@ class ParkourDataExtractor(object):
         self.num_frames_forces = self.acq.GetAnalogFrameNumber()
 
         # Obtain video information
-        video_path = join(parkour_laas, "videos", video_name+".mp4")
+        video_path = join(parkour_mocap, "videos", video_name+".mp4")
         self.video = cv.VideoCapture(video_path)
         self.fps_video = float(self.video.get(cv.CAP_PROP_FPS))
         self.first_frame_in_video = \
@@ -245,7 +245,7 @@ class ParkourDataExtractor(object):
         return int(self.fps_video/self.fps_force*frame_id_force)
 
 
-    def CopyImagesFromParkourLaas(self, source_folder=None,
+    def CopyImagesFromParkourMoCap(self, source_folder=None,
                                   target_folder=None, offset=3):
         '''
         Extract subset of frame images from the original sequence of video
@@ -254,7 +254,7 @@ class ParkourDataExtractor(object):
         '''
 
         if source_folder is None:
-            source_folder = join(self.parkour_laas, "frames",
+            source_folder = join(self.parkour_mocap, "frames",
                                  self.video_name)
 
         if target_folder is None:
@@ -660,7 +660,7 @@ if __name__ == '__main__':
         description="Extracting ground truth 3D Parkour motion and contact "
         "forces from Mocap data files (*.c3d)")
     parser.add_argument(
-        'parkour_laas', nargs='?', help="Path to Parkour-LAAS dataset")
+        'parkour_mocap', nargs='?', help="Path to Parkour-MoCap dataset")
     parser.add_argument(
         'parkour_dataset', nargs='?', help="Path to Parkour dataset")
     parser.add_argument(
@@ -688,7 +688,7 @@ if __name__ == '__main__':
         help="Visualize the 3D motion and forces extracted from c3d")
 
     args = parser.parse_args()
-    parkour_laas = args.parkour_laas
+    parkour_mocap = args.parkour_mocap
     parkour_dataset = args.parkour_dataset
     video_name = args.video_name
     plate_contact_force_map = args.plate_contact_force_map
@@ -722,14 +722,14 @@ if __name__ == '__main__':
     # Initialize data extractor
 
     worker = ParkourDataExtractor(
-        video_name, parkour_laas, parkour_dataset, visualize=visualize)
+        video_name, parkour_mocap, parkour_dataset, visualize=visualize)
 
 
     # ------------------------------------------------------------------
     # Copy a subsequence of frame images with ground truth poses and forces
     # comment this function if frames are already copied
 
-    worker.CopyImagesFromParkourLaas()
+    worker.CopyImagesFromParkourMoCap()
 
 
     # ------------------------------------------------------------------

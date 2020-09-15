@@ -4,7 +4,7 @@
 # Configuration
 
 option=${1}
-parkour_laas=TODO # path to Parkour-LAAS folder
+parkour_mocap=TODO # path to Parkour-MoCap folder
 parkour_dataset=TODO # path to Parkour-dataset folder
 
 # ------------------------------------------------------------
@@ -18,5 +18,5 @@ num_actions=${#actions[@]}
 for i in $( seq 0 $(( ${num_actions} - 1 )) )
 do
     action=${actions[i]}
-    source ${exec_path} ${option} ${parkour_laas} ${parkour_dataset} ${action}
+    source ${exec_path} ${option} ${parkour_mocap} ${parkour_dataset} ${action}
 done

@@ -4,7 +4,7 @@
 # Configuration
 
 option=${1}
-parkour_laas=${2}
+parkour_mocap=${2}
 parkour_dataset=${3}
 action=${4}
 
@@ -88,7 +88,7 @@ then
 
         if [ ${option} = 'extract_motion_forces' ]
         then
-            python lib/data_extractor.py ${parkour_laas} ${parkour_dataset} ${video_name} ${plate_contact_force_map[$i]} --missing-forces-l-ankle=${missing_forces_l_ankle[$i]} --missing-forces-r-ankle=${missing_forces_r_ankle[$i]} --save-results
+            python lib/data_extractor.py ${parkour_mocap} ${parkour_dataset} ${video_name} ${plate_contact_force_map[$i]} --missing-forces-l-ankle=${missing_forces_l_ankle[$i]} --missing-forces-r-ankle=${missing_forces_r_ankle[$i]} --save-results
         fi
     done
 fi
