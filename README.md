@@ -24,7 +24,7 @@ The database is composed of a set of raw sequence data captured with a Vicon MoC
 ```terminal
 git clone https://github.com/zongmianli/Parkour-dataset
 ```
-Unless otherwise specified in this page, the local path to the cloned repo is denoted by the symbol `${parkour_dataset}`.
+Unless otherwise specified, the path to the local `Parkour-dataset/` repo is denoted by the symbol `${parkour_dataset}` in the following parts.
 
 ### (Optional) Extracting frame images from video
 In terminal, run the following script to convert all videos in the dataset to image sequences. 
@@ -71,11 +71,13 @@ This section is aimed at reproducing the *Parkour dataset* from the original *Pa
 
 ### Download Parkour-MoCap data
 
-First of all, [download](https://gepettoweb.laas.fr/parkour/) and decompress the motion files and the original videos in a local machine.
-Create a local folder named *Parkour-MoCap* with two subfolders `c3d` and `videos` to host the motion files and the videos, respectively.
-Similarly to `${parkour_dataset}`, we use the symbol `${parkour_mocap}` to denote the path to the *Parkour-MoCap* folder.
+First of all, download the original motion data and RGB videos ([download link](https://gepettoweb.laas.fr/parkour/)).
+Decompress the downloaded packages into a new local repository named `Parkour-MoCap/`.
+This will create two subfolders `c3d` and `videos` with motion files and RGB videos, respectively.
+Similar to `${parkour_dataset}`, we use the symbol `${parkour_mocap}` to denote the path to the `Parkour-MoCap/` folder.
 
 ### Extracting frame images from Parkour-MoCap video
+
 Run the following script in terminal:
 ```terminal
 cd ${parkour_dataset}
@@ -84,8 +86,7 @@ source lib/video_to_frames.sh ${parkour_mocap}
 The output images are saved under `${parkour_mocap}/frames/`.
 
 ### Computing ground truth 3D motion and contact forces
-
-To do the job, run
+To do the job, update line 7 and line 8 in `lib/traverse_dataset.sh` with correct paths and then run
 ```terminal
 source lib/traverse_dataset.sh extract_motion_forces
 ```
@@ -95,5 +96,6 @@ The ground-truth 3D motion and contact forces are saved under `${parkour_dataset
 
 Note that the length of image sequences in `${parkour_dataset}/frames` are shorter than the original ones saved in `${parkour_mocap}/frames`.
 For example, the sequence *kv01_PKFC* which originally has 127 frames is shortened to 34 frames.
-This is becuase for each Parkour-MoCap video, only a short period of time (34 frames in the case of *kv01_PKFC*) is recorded with MoCap (e.g. marker positions, raw forces).
-For this reason, we remove the frames where Mocap data is missing (127-34=93 frames in the case of *kv01_PKFC*) and rename the remaining frames with new indices.
+This is becuase for each Parkour-MoCap video, only a short period of time (34 frames in the case of *kv01_PKFC*) was recorded with MoCap and force sensors.
+In other words, the lengths of the original RGB videos are longers than the MoCap/force sequences saved in `*.c3d`.
+For this reason, we chose to aligne each MoCap/force sequence with the corresponding video in time, remove the video frames with missing Mocap data (127-34=93 frames in the case of *kv01_PKFC*) and rename the remaining video frames with new indices.
