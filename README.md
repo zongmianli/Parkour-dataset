@@ -1,5 +1,9 @@
 # The LAAS Parkour dataset
 
+![sample-image](./sample-image.png)
+
+## Introduction
+
 The *LAAS Parkour dataset* contains 28 RGB videos capturing human subjects performing four typical parkour techniques: *safety-vault*, *kong vault*, *pull-up* and *muscle-up*.
 These are highly dynamic motions with rich contact interactions with the environment.
 The dataset is provided with the *ground truth 3D positions* of 16 pre-defined human joints, together with the *contact forces* at the human subjects' hand and foot joints exerted by the environment.
@@ -10,8 +14,8 @@ The major differences between the two datasets are summarized in the following t
 | Difference        | The LAAS Parkour MoCap database                                                                                            | The LAAS Parkour dataset (this repo)                                  |
 | :---------------: | :-------------------------------                                                                                           | :------------------------                                             |
 | Short name        | Parkour-MoCap                                                                                                              | Parkour-dataset                                                       |
-| Size              | 65 videos                                                                                                                  | 28 shortened videos                                                   |
-| Ground truth data | Raw sequence data captured with a Vicon MoCap system and force sensors (3D marker positions, force platform records, etc.) | 3D human joint positions & 6D contact forces computed from MoCap data |
+| Size              | 65 videos                                                                                                                  | 28 trimmed videos                                                            |
+| Ground truth data | Raw sequence data captured with a Vicon MoCap system and force sensors (MoCap marker positions, force platform records, etc.) | 3D human joint positions & 6D contact forces computed from MoCap data |
 
 
 ## Quick setup
@@ -71,7 +75,7 @@ print("mean torque errors: {0} N.m".format(
 
 ## (Optional) Reproducing the dataset from MoCap data
 
-As mentioned above, we make the distinction between the LAAS Parkour dataset (aka *Parkour-dataset*) and the original LAAS Parkour MoCap database (aka *Parkour-Mocap*).
+As mentioned above, we make the distinction between our smaller LAAS Parkour dataset (aka *Parkour-dataset*) and the original LAAS Parkour MoCap database (aka *Parkour-Mocap*).
 This section is aimed at reproducing the *Parkour dataset* from the original *Parkour-MoCap* data.
 
 ### Download Parkour-MoCap data
@@ -102,5 +106,28 @@ The ground-truth 3D motion and contact forces are saved to `${parkour_dataset}/g
 Note that the length of image sequences in `${parkour_dataset}/frames` are shorter than the original ones saved in `${parkour_mocap}/frames`.
 For example, the sequence *kv01_PKFC* which originally has 127 frames is shortened to 34 frames.
 This is because for each Parkour-MoCap video, only a short period of time (34 frames in the case of *kv01_PKFC*) was recorded with MoCap and force sensors.
-In other words, the lengths of the original RGB videos are longers than the MoCap/force sequences saved in `*.c3d`.
-For this reason, we chose to aligne each MoCap/force sequence with the corresponding video in time, remove the video frames with missing Mocap data (127-34=93 frames in the case of *kv01_PKFC*) and rename the remaining video frames with new indices.
+In other words, the lengths of the original RGB videos are longer than the MoCap/force sequences saved in `*.c3d`.
+For this reason, we chose to align each MoCap/force sequence with the corresponding video in time, remove the video frames with missing Mocap data (127-34=93 frames in the case of *kv01_PKFC*) and rename the remaining video frames with new indices.
+
+## Citation
+
+If you are using this dataset, please consider citing:
+```bibtex
+@article{maldonado2017angular,
+  title={Angular momentum regulation strategies for highly dynamic landing in Parkour},
+  author={Maldonado, Galo and Bailly, Fran{\c{c}}ois and Sou{\`e}res, Philippe and Watier, Bruno},
+  journal={Computer Methods in Biomechanics and Biomedical Engineering},
+  volume={20},
+  number={S1},
+  pages={123--124},
+  year={2017},
+  publisher={Taylor \& Francis Journals}
+}
+
+@phdthesis{maldonado2017analysis,
+  title={Analysis and generation of highly dynamic motions of anthropomorphic systems : application to parkour},
+  author={Maldonado, Galo},
+  year={2017},
+  school={Universit{\'e} Paul Sabatier - Toulouse III}
+}
+```
