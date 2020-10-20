@@ -1,5 +1,4 @@
 import btk
-import logging
 import argparse
 import shutil
 import time
@@ -653,8 +652,6 @@ class ParkourDataExtractor(object):
 
 
 if __name__ == '__main__':
-
-    logging.basicConfig(level=logging.INFO)
 
     parser = argparse.ArgumentParser(
         description="Extracting ground truth 3D Parkour motion and contact "

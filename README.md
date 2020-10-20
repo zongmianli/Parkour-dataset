@@ -2,12 +2,17 @@
 
 The *LAAS Parkour dataset* contains 28 RGB videos capturing human subjects performing four typical parkour techniques: *safety-vault*, *kong vault*, *pull-up* and *muscle-up*.
 These are highly dynamic motions with rich contact interactions with the environment.
-
 The dataset is provided with the *ground truth 3D positions* of 16 pre-defined human joints, together with the *contact forces* at the human subjects' hand and foot joints exerted by the environment.
 
 This dataset is based on the [LAAS Parkour MoCap database](https://gepettoweb.laas.fr/parkour/) which is originally created for biomechanics research. 
-We have extracted the most relevant videos from the LAAS Parkour MoCap database and provided additional scripts to process it. 
-The database is composed of a set of raw sequence data captured with a Vicon MoCap system and force sensors.
+The major differences between the two datasets are summarized in the following table:
+
+| Difference        | The LAAS Parkour MoCap database                                                                                            | The LAAS Parkour dataset (this repo)                                  |
+| :---------------: | :-------------------------------                                                                                           | :------------------------                                             |
+| Short name        | Parkour-MoCap                                                                                                              | Parkour-dataset                                                       |
+| Size              | 65 videos                                                                                                                  | 28 shortened videos                                                   |
+| Ground truth data | Raw sequence data captured with a Vicon MoCap system and force sensors (3D marker positions, force platform records, etc.) | 3D human joint positions & 6D contact forces computed from MoCap data |
+
 
 ## Quick setup
 
@@ -24,16 +29,16 @@ The database is composed of a set of raw sequence data captured with a Vicon MoC
 ```terminal
 git clone https://github.com/zongmianli/Parkour-dataset
 ```
-Unless otherwise specified, the path to the local `Parkour-dataset/` repository is denoted by the symbol `${parkour_dataset}` in the following parts.
+In the following parts, we will use the symbol `${parkour_dataset}` to denote the local path to the dataset repository `Parkour-dataset/`.
 
-### (Optional) Extracting frame images from video
-In terminal, run the following script to convert all videos in the dataset to image sequences. 
+### (Optional) Extracting frames from video
+In terminal, run the following script to convert all videos in the dataset to frames. 
 The output images are saved in the folder `${parkour_dataset}/frames/`.
 ```terminal
 cd ${parkour_dataset}
 source lib/video_to_frames.sh ${parkour_dataset}
 ```
-Alternatively, the pre-computed images can be directly downloaded from [here](https://www.di.ens.fr/willow/research/motionforcesfromvideo/data/Parkour-dataset-frames.zip)
+As an alternative, we provide a set of pre-extracted frames which can be downloaded from [here](https://www.di.ens.fr/willow/research/motionforcesfromvideo/data/Parkour-dataset-frames.zip)
 
 ## Computing motion and force estimation errors
 
@@ -66,8 +71,7 @@ print("mean torque errors: {0} N.m".format(
 
 ## (Optional) Reproducing the dataset from MoCap data
 
-For clarity, we refer to the original LAAS Parkour MoCap database as *Parkour-MoCap* and make the distinction between the *Parkour-MoCap* database and the present *Parkour dataset* used for evaluating 3D motion and force estimations.
-
+As mentioned above, we make the distinction between the LAAS Parkour dataset (aka *Parkour-dataset*) and the original LAAS Parkour MoCap database (aka *Parkour-Mocap*).
 This section is aimed at reproducing the *Parkour dataset* from the original *Parkour-MoCap* data.
 
 ### Download Parkour-MoCap data
@@ -77,7 +81,7 @@ Decompress the downloaded packages into a new local repository named `Parkour-Mo
 This will create two subfolders `c3d/` and `videos/` with motion files and RGB videos, respectively.
 Similar to `${parkour_dataset}`, we use the symbol `${parkour_mocap}` to denote the path to the `Parkour-MoCap/` folder.
 
-### Extracting frame images from Parkour-MoCap video
+### Extracting frames from Parkour-MoCap video
 
 Run the following script in terminal:
 ```terminal
@@ -91,9 +95,9 @@ To do the job, update line 7 and line 8 in `lib/traverse_dataset.sh` with correc
 ```terminal
 source lib/traverse_dataset.sh extract_motion_forces
 ```
-This command saves the frame images for Parkour dataset, computes 3D person joint positions from raw marker positions and local contact forces from the original analog channels read from C3D files.
-The output frame images are saved under `${parkour_dataset}/frames/`.
-The ground-truth 3D motion and contact forces are saved under `${parkour_dataset}/gt_motion_forces/`.
+This command saves the frames for the *Parkour dataset*, computes 3D person joint positions from raw marker positions and local contact forces from the original analog channels in C3D files.
+The output images are saved to `${parkour_dataset}/frames/`.
+The ground-truth 3D motion and contact forces are saved to `${parkour_dataset}/gt_motion_forces/`.
 
 Note that the length of image sequences in `${parkour_dataset}/frames` are shorter than the original ones saved in `${parkour_mocap}/frames`.
 For example, the sequence *kv01_PKFC* which originally has 127 frames is shortened to 34 frames.
