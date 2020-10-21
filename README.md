@@ -22,11 +22,11 @@ The major differences between the two datasets are summarized in the following t
 
 ### Dependencies
 
-* Python 2.7
-* Pinocchio (for computing rigid-body dynamics)
-* Gepetto-viewer Corba (for visualization)
-* FFmpeg (optional, for converting video to images)
-* BTK Python (optional, for reproducing this dataset)
+* Python 2
+* [Pinocchio](https://stack-of-tasks.github.io/pinocchio/) with Python binding (for computing rigid-body dynamics)
+* [Gepetto-viewer Corba](https://github.com/Gepetto/gepetto-viewer-corba) (optional, for visualization)
+* [ffmpeg](https://ffmpeg.org/) (optional, for converting video to images)
+* [BTK](http://biomechanical-toolkit.github.io/) Python (optional, for reproducing this dataset)
 
 ### Installation
 
@@ -42,7 +42,7 @@ The output images are saved in the folder `${parkour_dataset}/frames/`.
 cd ${parkour_dataset}
 source lib/video_to_frames.sh ${parkour_dataset}
 ```
-As an alternative, we provide a set of pre-extracted frames which can be downloaded from [here](https://www.di.ens.fr/willow/research/motionforcesfromvideo/data/Parkour-dataset-frames.zip)
+As an alternative, we provide a set of pre-extracted frames which can be downloaded from [here](https://www.di.ens.fr/willow/research/motionforcesfromvideo/Parkour-dataset/Parkour-dataset-frames.zip) (1.38 GB).
 
 ## Computing motion and force estimation errors
 
@@ -53,25 +53,58 @@ For example:
 ```python
 from parkour_evaluator import ParkourEvaluator
 
-gt_dir = "${parkour_dataset}/gt_motion_forces"
-sequence_name = "kv01_PKFC" # for example
-evaluator = ParkourEvaluator(gt_dir, sequence_name)
+gt_dir = "${parkour_dataset}/gt_motion_forces" # path to gt_motion_forces/
+video_name = "kv01_PKFC" # video name without extension
+evaluator = ParkourEvaluator(gt_dir, video_name)
 ```
+
+### Computing 3D motion errors
 
 The following code computes the mean per joint position error (MPJPE) of a set of input joint 3D positions (`joint_3d_positions_pred`) with respect to the ground truth after rigid alignment (by solving an orthogonal Procrustes problem):
 ```python
 evaluator.Evaluate3DPoses(joint_3d_positions_pred)
-print("MPJPE: {0:.2f} mm".format(evaluator.mpjpe['procrustes']))
+print("MPJPE (mm): {0:.2f}".format(evaluator.mpjpe['procrustes']))
 ```
+The input data `joint_3d_positions_pred` must be a 3D array of size `(num_frames, 16, 3)`, where `num_frames` is the number of video frames and 16 is the number of considered joints.
+The second dimension of `joint_3d_positions_pred` is supported to be sorted in the same order shown in the following table:
 
-Similarly, force errors are computed like this:
+| joint id | joint name     |
+| :------: | :----------    |
+|        0 | left hip       |
+|        1 | left knee      |
+|        2 | left ankle     |
+|        3 | left toes      |
+|        4 | right hip      |
+|        5 | right knee     |
+|        6 | right ankle    |
+|        7 | right toes     |
+|        8 | left shoulder  |
+|        9 | left elbow     |
+|       10 | left wrist     |
+|       11 | left fingers   |
+|       12 | right shoulder |
+|       13 | right elbow    |
+|       14 | right wrist    |
+|       15 | right fingers  |
+
+### Computing contact force errors
+
+This sample code shows how to evaluate a set of estimated 6D contact forces (`contact_forces_pred`) with respect to the ground truth.
 ```python
 evaluator.EvaluateContactForces(contact_forces_pred)
-print("mean linear force errors: {0} N".format(
+print("Mean lin. force errors (Newton): {0}".format(
     evaluator.mean_linear_force_errors))
-print("mean torque errors: {0} N.m".format(
+print("Mean torque errors (Newton-metre): {0}".format(
     evaluator.mean_torque_errors))
 ```
+Similarly, the data array `contact_forces_pred` must be of size `(num_frames, 4, 6)`, with the second dimension indicating the four types of contact forces considered in this dataset (see the table below).
+
+| force id | force description                   |
+| :------: | :-----------                        |
+|        0 | ground reaction force at left foot  |
+|        1 | ground reaction force at right foot |
+|        2 | object contact force at left hand   |
+|        3 | object contact force at right hand  |
 
 ## (Optional) Reproducing the dataset from MoCap data
 
@@ -80,7 +113,7 @@ This section is aimed at reproducing the *Parkour dataset* from the original *Pa
 
 ### Download Parkour-MoCap data
 
-First of all, download the original motion data and RGB videos ([download link](https://gepettoweb.laas.fr/parkour/)).
+First of all, download the original motion data and RGB videos (visit the [LAAS project page](https://gepettoweb.laas.fr/parkour/)).
 Decompress the downloaded packages into a new local repository named `Parkour-MoCap/`.
 This will create two subfolders `c3d/` and `videos/` with motion files and RGB videos, respectively.
 Similar to `${parkour_dataset}`, we use the symbol `${parkour_mocap}` to denote the path to the `Parkour-MoCap/` folder.
@@ -113,6 +146,13 @@ For this reason, we chose to align each MoCap/force sequence with the correspond
 
 If you are using this dataset, please consider citing:
 ```bibtex
+@InProceedings{li2019motionforcesfromvideo,
+  author={Zongmian Li and Jiri Sedlar and Justin Carpentier and Ivan Laptev and Nicolas Mansard and Josef Sivic},
+  title={Estimating 3D Motion and Forces of Person-Object Interactions from Monocular Video},
+  booktitle={Computer Vision and Pattern Recognition (CVPR)},
+  year={2019}
+}
+
 @article{maldonado2017angular,
   title={Angular momentum regulation strategies for highly dynamic landing in Parkour},
   author={Maldonado, Galo and Bailly, Fran{\c{c}}ois and Sou{\`e}res, Philippe and Watier, Bruno},
